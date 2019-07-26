@@ -1,0 +1,182 @@
+"Set up board
+ClrHome
+1->X
+While X<=8
+Output(X,9,"!")
+1+X->X
+End
+
+64->dim(L1)
+Fill(0,L1)
+
+1->L1(2):1->L1(4):1->L1(6):1->L1(8):1->L1(9):1->L1(11):1->L1(13):1->L1(15):1->L1(18):1->L1(20):1->L1(22):1->L1(24)
+
+2->L1(41):2->L1(43):2->L1(45):2->L1(47):2->L1(50):2->L1(52):2->L1(54):2->L1(56):2->L1(57):2->L1(59):2->L1(61):2->L1(63)
+
+{12,12}->L2
+
+"Draw pieces on board
+"O"->STR1:"+"->STR2:"^"->STR3
+1->X:1->Y:1->[theta]:0->A
+
+While [theta]<=64
+remainder([theta],8)->X
+If X=0:8->X
+round(([theta]/8)+.4,0)->Y
+L1([theta])->A
+If A=1:Output(Y,X,STR1)
+If A=2:Output(Y,X,STR2)
+[theta]+1->[theta]
+End
+
+"UI Stuff
+Output(1,10,"TURN: ")
+Output(3,10,"SELECT"):Output(4,12,"PIECE")
+
+"Main game loop
+"(P,Q) = cursor coords
+"(A,B) = previous coords
+"[theta] = list index at previous
+"Z = list index at cursor
+"R = value at previous
+"M = intermediate variable (temp)
+"F,G = intermediate variable (temp)
+"N = intermediate math variable
+"(U,V) = move coords
+"H = counter for flashing cursor
+"C = getKey
+"W = move L(1) or R(2)
+"D = current player (E = helper var)
+"J,K = double jump counter
+"I = status of game
+4->P:1->Q:1->A:1->B:0->[theta]:0->Z:0->R:1->D:0->I
+While I=0
+P->A:Q->B
+8*A->N:N-8->N:N+B->[theta]
+
+Repeat Ans
+getKey->C
+End
+
+L1([theta])->R
+If R=0:Output(A,B," ")
+If R=1:Output(A,B,STR1)
+If R=2:Output(A,B,STR2)
+
+If C=24:Q-1->Q
+If C=25:P-1->P
+If C=26:Q+1->Q
+If C=34:P+1->P
+
+If C=105:Then:
+8*P->N:N-8->N:N+Q->Z
+0->H:0->W:0->J:0->K
+L1(Z)->R
+Output(4,10,"       "):Output(4,12,"MOVE")
+If R=2&D=1:Then
+While W=0
+If H<3:Then:Output(P,Q," "):Else:Output(P,Q,STR2):End
+remainder(Z-9,8)->U
+If U=0:8->U
+round(((Z-9)/8)+.4,0)->V
+If (Z-9)<=0|Z=57|Z=41|Z=25|Z=9:Then:[neg]1->F:Else:L1(Z-9)->F:End
+If F=0:Then:Output(V,U,"?")
+Else:If F=1&(Z-18)>0&(Z-9)!=57&(Z-9)!=41&(Z-9)!=25&(Z-9)!=9:Then:Z-9->Z:remainder(Z-9,8)->U:If U=0:8->U:round(((Z-9)/8)+.4,0)->V:L1(Z-9)->F:Z+9->Z:If F=0:Then:Output(V,U,"?"):1->J:End:End:End
+remainder(Z-7,8)->U
+If U=0:8->U
+round(((Z-7)/8)+.4,0)->V
+If (Z-7)<=0|Z=8|Z=24|Z=40|Z=56:Then:[neg]1->G:Else:L1(Z-7)->G:End
+If G=0:Then:Output(V,U,"?")
+Else:If G=1&(Z-14)>0&(Z-7)!=8&(Z-7)!=24&(Z-7)!=40&(Z-7)!=56:Then:Z-7->Z:remainder(Z-7,8)->U:If U=0:8->U:round(((Z-7)/8)+.4,0)->V:L1(Z-7)->G:Z+7->Z:If G=0:Then:Output(V,U,"?"):1->K:End:End:End
+H+1->H
+If H>=6:0->H
+getKey->C
+If C=24:1->W
+If C=26:2->W
+If C=105:Then:3->W:1->E:Else:2->E:End
+End:End
+
+If R=1&D=2:Then
+While W=0
+If H<3:Then:Output(P,Q," "):Else:Output(P,Q,STR1):End
+remainder(Z+9,8)->U
+If U=0:8->U
+round(((Z+9)/8)+.4,0)->V
+If (Z+9)>=65|Z=8|Z=24|Z=40|Z=56:Then:[neg]1->F:Else:L1(Z+9)->F:End
+If F=0:Then:Output(V,U,"?")
+Else:If F=2&(Z+18)<65&(Z+9)!=8&(Z+9)!=24&(Z+9)!=40&(Z+9)!=56:Then:Z+9->Z:remainder(Z+9,8)->U:If U=0:8->U:round(((Z+9)/8)+.4,0)->V:L1(Z+9)->F:Z-9->Z:If F=0:Then:Output(V,U,"?"):1->J:End:End:End
+remainder(Z+7,8)->U
+If U=0:8->U
+round(((Z+7)/8)+.4,0)->V
+If (Z+7)>=65|Z=57|Z=41|Z=25|Z=9:Then:[neg]1->G:Else:L1(Z+7)->G:End
+If G=0:Then:Output(V,U,"?")
+Else:If G=2&(Z+14)<65&(Z+7)!=57&(Z+7)!=41&(Z+7)!=25&(Z+7)!=9:Then:Z+7->Z:remainder(Z+7,8)->U:If U=0:8->U:round(((Z+7)/8)+.4,0)->V:L1(Z+7)->G:Z-7->Z:If G=0:Then:Output(V,U,"?"):1->K:End:End:End
+H+1->H
+If H>=6:0->H
+getKey->C
+If C=24:1->W
+If C=26:2->W
+If C=105:Then:3->W:2->E:Else:1->E:End
+End:End
+
+Output(3,10,"       ")
+Output(4,10,"       ")
+Output(6,10,"WORKING")
+Output(8,10,".")
+If D=1:Then
+If W=1&F=0:Then:If J=0:Then:2->L1(Z-9):0->L1(Z):Else:If J=1:Then:2->L1(Z-18):0->L1(Z):0->L1(Z-9):End:End:End
+If W=2&G=0:Then:If K=0:Then:2->L1(Z-7):0->L1(Z):Else:If K=1:Then:2->L1(Z-14):0->L1(Z):0->L1(Z-7):End:End:End
+Output(8,11,".")
+Else:
+If W=2&F=0:Then:If J=0:Then:1->L1(Z+9):0->L1(Z):Else:If J=1:Then:1->L1(Z+18):0->L1(Z):0->L1(Z+9):End:End:End
+If W=1&G=0:Then:If K=0:Then:1->L1(Z+7):0->L1(Z):Else:If K=1:Then:1->L1(Z+14):0->L1(Z):0->L1(Z+7):End:End:End
+Output(8,11,".")
+End
+1->X:1->Y:1->M:0->N
+
+{0,0}->L2
+While M<=64
+remainder(M,8)->X
+If X=0:8->X
+round((M/8)+.4,0)->Y
+L1(M)->N
+If N=0:Output(Y,X," ")
+If N=1:Then:Output(Y,X,STR1):L2(1)+1->L2(1):End
+If N=2:Then:Output(Y,X,STR2):L2(2)+1->L2(2):End
+
+If M=16:Output(8,12,".")
+If M=32:Output(8,13,".")
+If M=48:Output(8,14,".")
+If M=63:Output(8,15,".")
+
+M+1->M
+End
+
+If L2(1)=0:2->I
+If L2(2)=0:1->I
+
+If E=2:2->D
+If E=1:1->D
+Output(8,16,".")
+Output(4,10,"       ")
+Output(1,10,"TURN: ")
+Output(3,10,"SELECT"):Output(4,12,"PIECE")
+Output(6,10,"       ")
+End
+
+"UI Stuff
+If D=2:Output(1,16,STR1)
+If D=1:Output(1,16,STR2)
+
+If P=0:1->P
+If P=9:8->P
+If Q=0:1->Q
+If Q=9:8->Q
+Output(P,Q,STR3)
+Output(8,10,"       ")
+End
+
+Output(8,10,"       ")
+If I=2:Then:Output(8,10,STR1):Else:Output(8,10,STR2):End
+Output(8,12,"WINS!")
+Pause
